@@ -25,4 +25,3 @@ message.setBody(nodeAsText);
 
 // println nodeAsText
 return message
-}
