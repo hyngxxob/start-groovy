@@ -37,3 +37,32 @@ def Message processData(Message message) {
     message.setProperty("cnt" , dataList.size())
     return message
 }
+
+def Message looping(Message message) {
+    // Message에서 properties를 가져옴
+    def map = message.getProperties();
+    def body = message.getBody(java.lang.String) as String;
+    // properties 에서 empList property 가져옴
+    def mapList = map.get("empList");
+    
+    JsonSlurper slurper = new JsonSlurper();
+    def parsedJson = slurper.parseText(mapList);
+    
+    def OID = parsedJson[0].objID
+    def EID = parsedJson[0].EmployeeID
+    def Name = parsedJson[0].LastName
+
+    def setbody = ""
+    setbody += "<Employee>" + "<ObjectID>" + OID + "</ObjectID>"
+    setbody += "<empID>" + EID + "</empID>"
+    setbody += "<Lastname>" + Name + "</Lastname>" + "</Employee>"
+
+    parsedJson.remove(0)
+
+    message.setBody(setbody)
+    message.setProperty("empList", JsonOutput.toJson(parsedJson))
+    message.setProperty("cnt", parsedJson.size())
+    // def text = "XML"
+
+    return message
+}
