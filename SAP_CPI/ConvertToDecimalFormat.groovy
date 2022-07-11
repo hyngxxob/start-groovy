@@ -6,4 +6,5 @@ def numberChk(String str) {
     def inputNum = fmt.parse(str).doubleValue()
     def result = fmt.format(inputNum)
     return result;
+    def commit_test;
 }
