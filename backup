@@ -22,16 +22,7 @@ def Message processData(Message message) {
     def parsedJson = slurper.parseText(body);
     
     def list = parsedJson.ServiceRequestCollection.ServiceRequest;
-    // def resultList = [];
-
-    // if(list instanceof ArrayList){  // 불러온 데이터가 List Type이면
-    //     resultList = list;          // 리스트에 담아주고
-    // }else{
-    //     resultList.add(list);       // 아니면 추가 해 준다.
-    // }
     
-    // message.setProperty("resultList",resultList);   // (변수)Property 명, 넣어줄 데이터
-    // message.setProperty("resultListSize",resultList.size());
     // def BuyerPartyID = [];
     def BuyerPartyID = "";
     def BuyerPartyID_SIZE;
@@ -39,7 +30,7 @@ def Message processData(Message message) {
         if(list.size() == 1 ) {
             BuyerPartyID += obj.BuyerPartyID;
         } else {
-            BuyerPartyID += obj.BuyerPartyID + "%div%";
+            BuyerPartyID += obj.BuyerPartyID + "%col%"+ obj.ID + "%div%";
         }
         println obj.BuyerPartyID;
         // BuyerPartyID.add(obj.BuyerPartyID);
@@ -57,14 +48,17 @@ def Message Loop(Message message) {
     def BuyerPartyID = []
     def BuyerPartyID_SIZE;
     def tempBuyerPartyID = "";
-
     if(properties.indexOf("%div%") != -1) {
         def properties_split = properties.split("%div%");
-        println properties_split
         BuyerPartyID.addAll(properties_split)
+        println BuyerPartyID
         def obj = BuyerPartyID[0];
-        message.setProperty("CUSID", obj);
-        
+        def obj_split = obj.split("%col%");
+        def cus_id = obj_split[0]
+        def id = obj_split[1]
+        message.setProperty("CUSID", cus_id);
+        message.setProperty("TEMP_ID", id)
+
         BuyerPartyID.remove(0)
         BuyerPartyID_SIZE = BuyerPartyID.size()
         for( lst in BuyerPartyID) {
@@ -97,7 +91,7 @@ def Message Detect(Message message) {
     
     def collection_size = parsedJson.IndividualCustomerCollection.size()
     def OID_BAGS = [];
-
+    def TICKETID_BAGS = [];
     // println collection_size
 
     // def test = message.getProperty("OID_BAGS")
@@ -118,10 +112,18 @@ def Message Detect(Message message) {
         }
 
         if(!initial_chk(OID)) {
+            def ticket_id = message.getProperty("TEMP_ID")
+            def ticket_list = message.getProperty("TICKET_LIST").minus("[").minus("]")
+            TICKETID_BAGS.addAll(ticket_list)
             OID_BAGS.add(OID)
+            TICKETID_BAGS.add(ticket_id)
             message.setProperty("OID_BAGS", OID_BAGS)
             message.setProperty("OID_cnt", OID_BAGS.size())
+            message.setProperty("TICKET_LIST",TICKETID_BAGS)
+            message.setProperty("TEMP_ID","");
         }
+    } else {
+        message.setProperty("TEMP_ID","");
     }
     // def chk = test instanceof ArrayList;
 
