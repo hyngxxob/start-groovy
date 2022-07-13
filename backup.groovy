@@ -22,7 +22,16 @@ def Message processData(Message message) {
     def parsedJson = slurper.parseText(body);
     
     def list = parsedJson.ServiceRequestCollection.ServiceRequest;
+    // def resultList = [];
+
+    // if(list instanceof ArrayList){  // 불러온 데이터가 List Type이면
+    //     resultList = list;          // 리스트에 담아주고
+    // }else{
+    //     resultList.add(list);       // 아니면 추가 해 준다.
+    // }
     
+    // message.setProperty("resultList",resultList);   // (변수)Property 명, 넣어줄 데이터
+    // message.setProperty("resultListSize",resultList.size());
     // def BuyerPartyID = [];
     def BuyerPartyID = "";
     def BuyerPartyID_SIZE;
@@ -102,19 +111,25 @@ def Message Detect(Message message) {
         def IndividualCustomer = parsedJson.IndividualCustomerCollection.IndividualCustomer;
         def OID = parsedJson.IndividualCustomerCollection.IndividualCustomer.ObjectID;
         def OID_BAGS_prop = message.getProperty("OID_BAGS");
+        def TICKET_LIST_prop = message.getProperty("TICKET_LIST")
 
-        if(!initial_chk(OID_BAGS_prop)) {
+        if(OID_BAGS_prop != null) {
             def properties = message.getProperty("OID_BAGS").minus("[").minus("]");
             OID_BAGS.addAll(properties)
         } else {
             message.setProperty("OID_BAGS", OID_BAGS)
             message.setProperty("OID_cnt", OID_BAGS.size())
         }
+        
+        if(TICKET_LIST_prop != null) {
+            def ticket_list = message.getProperty("TICKET_LIST").minus("[").minus("]")
+            TICKETID_BAGS.addAll(ticket_list)
+        } else {
+            message.setProperty("TICKET_LIST","")
+        }
 
         if(!initial_chk(OID)) {
             def ticket_id = message.getProperty("TEMP_ID")
-            def ticket_list = message.getProperty("TICKET_LIST").minus("[").minus("]")
-            TICKETID_BAGS.addAll(ticket_list)
             OID_BAGS.add(OID)
             TICKETID_BAGS.add(ticket_id)
             message.setProperty("OID_BAGS", OID_BAGS)
