@@ -107,16 +107,15 @@ def Message Detect(Message message) {
     if(collection_size > 0) {
         def IndividualCustomer = parsedJson.IndividualCustomerCollection.IndividualCustomer;
         def OID = parsedJson.IndividualCustomerCollection.IndividualCustomer.ObjectID;
-         
         def OID_BAGS_prop = message.getProperty("OID_BAGS");
-        println OID_BAGS_prop
-        println !initial_chk(OID_BAGS_prop)
+
         if(!initial_chk(OID_BAGS_prop)) {
             def properties = message.getProperty("OID_BAGS").minus("[").minus("]");
             OID_BAGS.addAll(properties)
+        } else {
+            message.setProperty("OID_BAGS", OID_BAGS)
+            message.setProperty("OID_cnt", OID_BAGS.size())
         }
-
-
 
         if(!initial_chk(OID)) {
             OID_BAGS.add(OID)
