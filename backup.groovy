@@ -36,12 +36,16 @@ def Message processData(Message message) {
     def BuyerPartyID = "";
     def BuyerPartyID_SIZE;
     for( obj in list ) {
-        if(list.size() == 1 ) {
-            BuyerPartyID += obj.BuyerPartyID;
+        if(obj.BuyerPartyID == "" || obj.BuyerPartyID == null) {
+            continue;
         } else {
-            BuyerPartyID += obj.BuyerPartyID + "%col%"+ obj.ID + "%div%";
+            if(list.size() == 1 ) {
+                BuyerPartyID += obj.BuyerPartyID;
+            } else {
+                BuyerPartyID += obj.BuyerPartyID + "%col%" + obj.ID + "%div%";
+            }
+            println obj.BuyerPartyID;
         }
-        println obj.BuyerPartyID;
         // BuyerPartyID.add(obj.BuyerPartyID);
         //BuyerPartyID += obj.BuyerPartyID;
     }
